@@ -9,7 +9,6 @@ AC_SUBST(VERSION)
 
 if test ${libexecdir} = '${exec_prefix}/libexec'
 then
-  libexecdir='${exec_prefix}/lib'
   if test "${exec_prefix}" = "NONE"
   then
     TMPFILESDIR=${prefix}/lib/tmpfiles.d
