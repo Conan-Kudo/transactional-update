@@ -22,6 +22,11 @@ export LANG=C
 
 DIR_TO_MOUNT="dev opt var/log"
 EXITCODE=0
+PACKAGE_MANAGER="auto"
+DNF_ARG=""
+DNF_NONINTERACTIVE="--assumeyes"
+DNF_ARG_PKGS=""
+DNF_RELEASEVER=$(source /etc/os-release; echo ${VERSION_ID})
 ZYPPER_ARG=""
 ZYPPER_NONINTERACTIVE="-y --auto-agree-with-product-licenses"
 ZYPPER_ARG_PKGS=""
@@ -273,9 +278,10 @@ check_registration_on_next_reboot() {
 
 ORIG_ARGS="$@"
 
-# If no option is given, assume "up"
+# If no option is given, assume "upgrade"
 if [ $# -eq 0 ]; then
-    ZYPPER_ARG="up"
+    DNF_ARG="upgrade"
+    ZYPPER_ARG="update"
 fi
 
 while [ 1 ]; do
@@ -288,12 +294,19 @@ while [ 1 ]; do
 	    DO_CLEANUP=1
 	    shift
 	    ;;
-	dup)
+	dup|dsync)
+	    DNF_ARG="distro-sync"
 	    ZYPPER_ARG="dup --no-allow-vendor-change"
 	    shift
 	    ;;
-        up|patch)
-	    ZYPPER_ARG=$1
+        up)
+	    DNF_ARG="upgrade"
+	    ZYPPER_ARG="upgrade"
+	    shift
+	    ;;
+        patch)
+	    DNF_ARG="upgrade --advisory"
+	    ZYPPER_ARG="patch"
 	    shift
 	    ;;
 	ptf|pkg|package)
@@ -303,15 +316,18 @@ while [ 1 ]; do
 	    fi
 	    case "$1" in
 		install|in)
+		    DNF_ARG="install"
 		    ZYPPER_ARG="install"
 		    shift
 		    ;;
 		remove|rm)
+		    DNF_ARG="remove"
 		    ZYPPER_ARG="remove"
 		    shift
 		    ;;
-		update|up)
-		    ZYPPER_ARG="up"
+		upgrade|update|up)
+		    DNF_ARG="upgrade"
+		    ZYPPER_ARG="update"
 		    shift
 		    ;;
 		*)
@@ -327,15 +343,19 @@ while [ 1 ]; do
 		if [ $# -eq 0 ]; then
 		    break;
 		else
+		    DNF_ARG_PKGS="${DNF_ARG_PKGS} $1";
 		    ZYPPER_ARG_PKGS="${ZYPPER_ARG_PKGS} $1";
 		    shift
 		fi
 	    done
             # Interactively run installing PTFs
+            DNF_NONINTERACTIVE=""
             ZYPPER_NONINTERACTIVE=""
 	    ;;
 	migration)
 	    DO_MIGRATION=1
+	    DNF_NONINTERACTIVE=""
+	    DNF_ARG="--releasever=$((DNF_RELEASEVER+1)) distro-sync"
 	    ZYPPER_NONINTERACTIVE=""
 	    ZYPPER_ARG="migration --no-snapshots"
 	    shift

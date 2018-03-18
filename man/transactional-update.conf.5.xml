@@ -73,6 +73,45 @@
 
     <variablelist>
       <varlistentry>
+        <term><varname>PACKAGE_MANAGER</varname></term>
+        <listitem>
+          <para>Specify the package manager to use.</para>
+          <variablelist>
+            <varlistentry>
+              <term><literal>auto</literal></term>
+              <listitem>
+	        <para>
+                  Identifies the default package manager based on distribution type
+                  and configuration state; if unable to determine which to use, it
+                  falls back to <literal>zypper</literal>.
+                </para>
+                <para>
+                  This is the default value. If the option is invalid it will
+                  also be used as the fallback value.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><literal>dnf</literal></term>
+              <listitem>
+                <para>
+                  Will use the DNF package manager for software management.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><literal>zypper</literal></term>
+              <listitem>
+                <para>
+                  Will use the Zypper package manager for software management.
+                </para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term><varname>REBOOT_METHOD</varname></term>
         <listitem>
           <para>Specify the reboot method to use.</para>
